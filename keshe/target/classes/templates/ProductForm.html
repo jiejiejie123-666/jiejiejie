@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.id == null} ? '添加商品' : '编辑商品'">商品表单</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .form-container { padding: 20px 30px; max-width: 700px; margin: 0 auto; }
+        .form-container h2 { color: #333; font-size: 20px; margin-bottom: 20px; }
+        .form-card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; color: #333; margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .btn-row { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #1890ff; color: #fff; }
+        .btn-default { background: #fff; color: #333; border: 1px solid #d9d9d9; }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2 th:text="${product.id == null} ? '添加商品' : '编辑商品'">商品表单</h2>
+    <form class="form-card" method="post" th:action="${formAction}">
+        <div class="form-group">
+            <label>商品名称 <span style="color:red">*</span></label>
+            <input type="text" name="name" th:value="${product.name}" required placeholder="请输入商品名称">
+        </div>
+        <div class="form-group">
+            <label>图片URL</label>
+            <input type="text" name="photoUrl" th:value="${product.photoUrl}" placeholder="如 /img/p1.jpg">
+        </div>
+        <div class="form-group">
+            <label>价格 <span style="color:red">*</span></label>
+            <input type="number" name="price" th:value="${product.price}" step="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+            <label>描述</label>
+            <textarea name="descp" th:text="${product.descp}" placeholder="商品描述..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>分类</label>
+            <select name="catId">
+                <option value="">-- 请选择分类 --</option>
+                <option th:each="c : ${categories}" th:value="${c.id}"
+                        th:text="${c.name}"
+                        th:selected="${product.catId == c.id}">分类</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>发布日期</label>
+            <input type="date" name="releaseDate"
+                   th:value="${product.releaseDate != null ? #temporals.format(product.releaseDate, 'yyyy-MM-dd') : ''}">
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">💾 保存</button>
+            <a th:href="@{/product/list}" class="btn btn-default">取消</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

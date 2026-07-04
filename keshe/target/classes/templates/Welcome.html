@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="welcome-page">
+<div class="welcome-container">
+    <h2>👋 欢迎使用智慧商品信息管理系统</h2>
+    <p class="welcome-desc">
+        本系统基于 <strong>Spring Boot + MyBatis + Thymeleaf</strong> 构建，
+        实现了商品信息管理、分类管理、用户登录认证、权限控制、分页搜索及缓存优化等核心功能。
+    </p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <span class="icon">📦</span>
+            <h3>商品管理</h3>
+            <p>商品的增删改查，支持多条件动态搜索与分页展示</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">📂</span>
+            <h3>分类管理</h3>
+            <p>商品分类的维护，支持分类下的商品关联查询</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">🔐</span>
+            <h3>安全认证</h3>
+            <p>用户登录认证、角色权限控制、菜单动态显隐</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">⚡</span>
+            <h3>缓存优化</h3>
+            <p>Spring Cache + Redis 双重缓存，提升响应速度</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

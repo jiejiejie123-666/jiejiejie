@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  thymeleaf:
+    cache: false
+  cache:
+    type: simple
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      connect-timeout: 5s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  datasource:
+    url: jdbc:mysql://129.204.142.57:3306/2024gjh?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: "Bigdata22!"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+logging:
+  level:
+    com.example.keshe: debug

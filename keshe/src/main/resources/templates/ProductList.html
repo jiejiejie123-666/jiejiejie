@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .table-container { padding: 20px 30px; max-width: 1200px; margin: 0 auto; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .table-header h2 { color: #333; font-size: 20px; }
+        .btn { padding: 8px 18px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #1890ff; color: #fff; }
+        .btn-default { background: #fff; color: #333; border: 1px solid #d9d9d9; }
+        .search-bar { background: #fff; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+        .search-item { display: flex; flex-direction: column; gap: 4px; }
+        .search-item label { font-size: 12px; color: #888; }
+        .search-item input, .search-item select { padding: 6px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; width: 150px; }
+        .price-range { display: flex; align-items: center; gap: 6px; }
+        .price-range input { width: 90px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        th { background: #fafafa; color: #555; font-weight: 600; }
+        tr:hover td { background: #f5f9ff; }
+        .price { color: #e74c3c; font-weight: 600; }
+        .cat-tag { display: inline-block; padding: 2px 10px; background: #e6f7ff; color: #1890ff; border-radius: 12px; font-size: 12px; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 20px; }
+        .pagination a, .pagination span { padding: 6px 14px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; text-decoration: none; color: #333; background: #fff; }
+        .pagination a:hover { border-color: #1890ff; color: #1890ff; }
+        .pagination .current { background: #1890ff; color: #fff; border-color: #1890ff; }
+        .pagination .disabled { color: #ccc; cursor: not-allowed; }
+        .page-info { text-align: center; color: #888; font-size: 13px; margin-top: 8px; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; border-radius: 4px; }
+        .btn-edit { background: #52c41a; color: #fff; }
+        .btn-del { background: #ff4d4f; color: #fff; }
+        .msg-tip { background: #e6f7ff; border: 1px solid #91d5ff; color: #1890ff; padding: 10px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
+    </style>
+</head>
+<body>
+<div class="table-container">
+    <div class="table-header">
+        <h2>📦 商品列表</h2>
+        <a th:href="@{/product/add}" class="btn btn-primary">+ 添加商品</a>
+    </div>
+    <div th:if="${msg}" class="msg-tip" th:text="${msg}"></div>
+    <form class="search-bar" th:action="@{/product/list}" method="get">
+        <div class="search-item">
+            <label>商品名称</label>
+            <input type="text" name="name" th:value="${name}" placeholder="模糊搜索">
+        </div>
+        <div class="search-item">
+            <label>分类</label>
+            <select name="catId">
+                <option value="">全部</option>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">分类</option>
+            </select>
+        </div>
+        <div class="search-item">
+            <label>价格区间</label>
+            <div class="price-range">
+                <input type="number" name="minPrice" th:value="${minPrice}" placeholder="最低" step="0.01">
+                <span>-</span>
+                <input type="number" name="maxPrice" th:value="${maxPrice}" placeholder="最高" step="0.01">
+            </div>
+        </div>
+        <div class="search-item">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">🔍 搜索</button>
+        </div>
+        <div class="search-item">
+            <label>&nbsp;</label>
+            <a th:href="@{/product/list}" class="btn btn-default">🔄 重置</a>
+        </div>
+    </form>
+    <table th:if="${pageInfo.list != null and not pageInfo.list.isEmpty()}">
+        <thead>
+            <tr><th>序号</th><th>名称</th><th>图片</th><th>价格</th><th>描述</th><th>分类</th><th>发布日期</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+            <tr th:each="p, iterStat : ${pageInfo.list}">
+                <td th:text="${(pageInfo.pageNum - 1) * pageInfo.pageSize + iterStat.count}">1</td>
+                <td th:text="${p.name}">商品名</td>
+                <td><img th:src="${p.photoUrl}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                <td class="price" th:text="'¥' + ${#numbers.formatDecimal(p.price, 1, 2)}">¥0</td>
+                <td th:text="${p.descp}">描述</td>
+                <td><span class="cat-tag" th:text="${p.categoryName}">分类</span></td>
+                <td th:text="${#temporals.format(p.releaseDate, 'yyyy-MM-dd')}">2024-01-01</td>
+                <td>
+                    <a th:href="@{/product/edit/{id}(id=${p.id})}" class="btn btn-sm btn-edit">编辑</a>
+                    <a th:href="@{/product/delete/{id}(id=${p.id})}" class="btn btn-sm btn-del"
+                       onclick="return confirm('确定删除商品「'+this.getAttribute('data-name')+'」吗？')"
+                       th:attr="data-name=${p.name}">删除</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div th:unless="${pageInfo.list != null and not pageInfo.list.isEmpty()}" style="text-align:center;padding:40px;color:#999;">暂无商品</div>
+    <div th:if="${pageInfo.pages > 1}">
+        <div class="pagination">
+            <a th:if="${pageInfo.pageNum > 1}" th:href="@{/product/list(pageNum=1,name=${name},catId=${catId},minPrice=${minPrice},maxPrice=${maxPrice})}">首页</a>
+            <span th:unless="${pageInfo.pageNum > 1}" class="disabled">首页</span>
+            <a th:if="${pageInfo.pageNum > 1}" th:href="@{/product/list(pageNum=${pageInfo.pageNum - 1},name=${name},catId=${catId},minPrice=${minPrice},maxPrice=${maxPrice})}">上一页</a>
+            <span th:unless="${pageInfo.pageNum > 1}" class="disabled">上一页</span>
+            <th:block th:each="i : ${#numbers.sequence(1, pageInfo.pages)}">
+                <span th:if="${i == pageInfo.pageNum}" class="current" th:text="${i}">1</span>
+                <a th:unless="${i == pageInfo.pageNum}" th:href="@{/product/list(pageNum=${i},name=${name},catId=${catId},minPrice=${minPrice},maxPrice=${maxPrice})}" th:text="${i}">1</a>
+            </th:block>
+            <a th:if="${pageInfo.pageNum < pageInfo.pages}" th:href="@{/product/list(pageNum=${pageInfo.pageNum + 1},name=${name},catId=${catId},minPrice=${minPrice},maxPrice=${maxPrice})}">下一页</a>
+            <span th:unless="${pageInfo.pageNum < pageInfo.pages}" class="disabled">下一页</span>
+            <a th:if="${pageInfo.pageNum < pageInfo.pages}" th:href="@{/product/list(pageNum=${pageInfo.pages},name=${name},catId=${catId},minPrice=${minPrice},maxPrice=${maxPrice})}">尾页</a>
+            <span th:unless="${pageInfo.pageNum < pageInfo.pages}" class="disabled">尾页</span>
+        </div>
+        <p class="page-info">共 <strong th:text="${pageInfo.total}">0</strong> 条，第 <strong th:text="${pageInfo.pageNum}">1</strong>/<strong th:text="${pageInfo.pages}">1</strong> 页</p>
+    </div>
+</div>
+</body>
+</html>
